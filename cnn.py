@@ -64,7 +64,7 @@ def train(x, y):
 
     batch_size = 10
     epochs = 300
-    num_filters = 10
+    num_filters = 100
     # num_filters = 1
     filter_len = 10
 
