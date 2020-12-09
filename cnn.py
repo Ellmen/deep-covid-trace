@@ -36,7 +36,7 @@ def seq_to_pwm(seq):
     return [encode_base(base) for base in seq]
 
 
-def convert_data(fasta_path='./data/msa.fasta'):
+def convert_data(fasta_path='./data/variable_seqs.fasta'):
     regions = []
     seqs = []
 
@@ -59,21 +59,21 @@ def train(x, y):
     dropout_pool = 0.1
     dropout_dense = 0.1
 
-    es = EarlyStopping(monitor='val_accuracy', mode='max', verbose = 1, patience=20)
+    es = EarlyStopping(monitor='val_loss', mode='max', verbose = 1, patience=300)
     mc = ModelCheckpoint('./models/best_cnn_model.h5', monitor='val_accuracy', mode='max', verbose = 1, save_best_only=True)
 
-    batch_size = 128
-    epochs = 80
-    # num_filters = 100
-    num_filters = 1
+    batch_size = 10
+    epochs = 300
+    num_filters = 10
+    # num_filters = 1
     filter_len = 10
 
     model = Sequential([
         Conv1D(filters=num_filters, kernel_size=filter_len, activation='relu', input_shape=input_shape),
         GlobalMaxPooling1D(),
         # Dropout(dropout_pool),
-        # Dense(100, activation='relu'),
-        Dense(1, activation='relu'),
+        Dense(num_filters, activation='relu'),
+        # Dense(1, activation='relu'),
         # Dropout(dropout_dense),
         Dense(y.shape[1], activation='sigmoid')
     ])
@@ -86,7 +86,7 @@ def train(x, y):
 
 if __name__ == '__main__':
     # convert_data()
-    data = loadmat('./data/msa.mat')
+    data = loadmat('./data/variable_seqs.mat')
     # data = loadmat('test.mat')
     X = data['X']
     Y = data['Y']
