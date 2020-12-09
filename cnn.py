@@ -64,22 +64,24 @@ def train(x, y):
 
     batch_size = 128
     epochs = 80
-    num_filters = 100
+    # num_filters = 100
+    num_filters = 1
     filter_len = 10
 
     model = Sequential([
         Conv1D(filters=num_filters, kernel_size=filter_len, activation='relu', input_shape=input_shape),
         GlobalMaxPooling1D(),
-        Dropout(dropout_pool),
-        Dense(100, activation='relu'),
-        Dropout(dropout_dense),
+        # Dropout(dropout_pool),
+        # Dense(100, activation='relu'),
+        Dense(1, activation='relu'),
+        # Dropout(dropout_dense),
         Dense(y.shape[1], activation='sigmoid')
     ])
     model.summary()
 
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-    model.fit(x, y, batch_size=batch_size, epochs=epochs, validation_split=0.1, callbacks = [es, mc])
+    model.fit(x, y, batch_size=batch_size, epochs=epochs, validation_split=0.2, callbacks = [es, mc])
 
 
 if __name__ == '__main__':
