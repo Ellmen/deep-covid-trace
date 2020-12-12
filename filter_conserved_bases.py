@@ -6,8 +6,8 @@ from Bio.Seq import Seq
 regions = set()
 reg_counts = defaultdict(int)
 
-records = list(SeqIO.parse("./data/msa.fasta", "fasta"))
-new_records = list(SeqIO.parse("./data/msa.fasta", "fasta"))
+records = list(SeqIO.parse("./data/balanced_seqs.fasta", "fasta"))
+new_records = list(SeqIO.parse("./data/balanced_seqs.fasta", "fasta"))
 
 for record in new_records:
     record.seq = Seq("")
@@ -30,4 +30,4 @@ for i in range(len(records[0].seq)):
         for j in range(len(records)):
             new_records[j].seq += bases[j]
             
-SeqIO.write(new_records, "./data/variable_seqs.fasta", "fasta")
+SeqIO.write(new_records, "./data/balanced_variable_seqs.fasta", "fasta")

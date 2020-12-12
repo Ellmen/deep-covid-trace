@@ -1,3 +1,5 @@
+from random import Random
+
 import numpy as np
 from scipy.io import loadmat, savemat
 from Bio import SeqIO
@@ -20,6 +22,12 @@ from tensorflow.keras import regularizers, optimizers
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCheckpoint
 
 
+def test_model(x_test, y_test):
+    saved_model = load_model('./models/best_cnn_model.h5')
+    test_loss, test_acc = saved_model.evaluate(x_test, y_test, verbose=0)
+    print('Test accuracy: {}'.format(test_acc))
+
+
 # One hot encoding of base pairs
 def encode_base(base):
     bases = ['A', 'C', 'G', 'T']
@@ -36,13 +44,13 @@ def seq_to_pwm(seq):
     return [encode_base(base) for base in seq]
 
 
-def convert_data(fasta_path='./data/variable_seqs.fasta'):
+def convert_data(fasta_path='./data/balanced_variable_seqs.fasta'):
     regions = []
     seqs = []
 
     for record in SeqIO.parse(fasta_path, "fasta"):
-        sep_idx = record.id.rfind('|')
-        region = record.id[sep_idx+1:]
+        sep_idx = record.description.rfind('|')
+        region = record.description[sep_idx+1:]
         regions.append(region)
         seqs.append(str(record.seq))
 
@@ -56,8 +64,8 @@ def convert_data(fasta_path='./data/variable_seqs.fasta'):
 def train(x, y):
     # TODO: Optimize models, parameters
     input_shape = (None, 4)
-    dropout_pool = 0.1
-    dropout_dense = 0.1
+    dropout_pool = 0.5
+    dropout_dense = 0.5
 
     es = EarlyStopping(monitor='val_loss', mode='max', verbose = 1, patience=300)
     mc = ModelCheckpoint('./models/best_cnn_model.h5', monitor='val_accuracy', mode='max', verbose = 1, save_best_only=True)
@@ -73,7 +81,6 @@ def train(x, y):
         GlobalMaxPooling1D(),
         # Dropout(dropout_pool),
         Dense(num_filters, activation='relu'),
-        # Dense(1, activation='relu'),
         # Dropout(dropout_dense),
         Dense(y.shape[1], activation='sigmoid')
     ])
@@ -86,14 +93,18 @@ def train(x, y):
 
 if __name__ == '__main__':
     # convert_data()
-    data = loadmat('./data/variable_seqs.mat')
+    data = loadmat('./data/balanced_variable_seqs.mat')
     # data = loadmat('test.mat')
+    seed = 1
     X = data['X']
     Y = data['Y']
+    Random(seed).shuffle(X)
+    Random(seed).shuffle(Y)
     splt = int(len(Y) * 0.9)
     x_train = X[:splt]
     y_train = Y[:splt]
     x_test = X[splt:]
     y_test = Y[splt:]
     del data, X, Y
-    train(x_train, y_train)
+    # train(x_train, y_train)
+    test_model(x_test, y_test)
