@@ -1,12 +1,10 @@
 from random import Random
 
+from matplotlib import pyplot as plt
 import numpy as np
 from scipy.io import loadmat, savemat
 from Bio import SeqIO
-from tensorflow import keras
 
-from tensorflow.keras import layers
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.layers import (
     Input,
     Conv1D,
@@ -15,17 +13,27 @@ from tensorflow.keras.layers import (
     Flatten,
     Dropout,
     GlobalMaxPooling1D,
+    MaxPooling1D,
 )
 from tensorflow.keras.models import Sequential, Model, load_model
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras import regularizers, optimizers
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCheckpoint
 
 
 def test_model(x_test, y_test):
-    saved_model = load_model('./models/best_cnn_model.h5')
+    saved_model = load_model('./models/best_cnn_model_100.h5')
     test_loss, test_acc = saved_model.evaluate(x_test, y_test, verbose=0)
     print('Test accuracy: {}'.format(test_acc))
+
+
+def plot_history(history):
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('CNN accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Val'], loc='upper left')
+    plt.show()
 
 
 # One hot encoding of base pairs
@@ -68,10 +76,10 @@ def train(x, y):
     dropout_dense = 0.5
 
     es = EarlyStopping(monitor='val_loss', mode='max', verbose = 1, patience=300)
-    mc = ModelCheckpoint('./models/best_cnn_model.h5', monitor='val_accuracy', mode='max', verbose = 1, save_best_only=True)
+    mc = ModelCheckpoint('./models/best_cnn_model_100.h5', monitor='val_accuracy', mode='max', verbose = 1, save_best_only=True)
 
     batch_size = 10
-    epochs = 300
+    epochs = 100
     num_filters = 100
     # num_filters = 1
     filter_len = 10
@@ -82,13 +90,14 @@ def train(x, y):
         # Dropout(dropout_pool),
         Dense(num_filters, activation='relu'),
         # Dropout(dropout_dense),
-        Dense(y.shape[1], activation='sigmoid')
+        Dense(y.shape[1], activation='softmax')
     ])
     model.summary()
 
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-    model.fit(x, y, batch_size=batch_size, epochs=epochs, validation_split=0.2, callbacks = [es, mc])
+    history = model.fit(x, y, batch_size=batch_size, epochs=epochs, validation_split=0.2, callbacks = [es, mc])
+    plot_history(history)
 
 
 if __name__ == '__main__':
