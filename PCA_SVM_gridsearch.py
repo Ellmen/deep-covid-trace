@@ -15,9 +15,11 @@ X = data['X']
 Y = data['Y'] 
 X=X.reshape(X.shape[0],X.shape[1]*X.shape[2])
 Y= np.argmax(Y, axis=1)
-seed = 101
-Random(seed).shuffle(X)
-Random(seed).shuffle(Y)
+seed = 1
+np.random.seed(seed)
+np.random.shuffle(X)
+np.random.seed(seed)
+np.random.shuffle(Y)
 splt = int(len(Y) * 0.9)
 x_train = X[:splt]
 y_train = Y[:splt]
@@ -77,16 +79,13 @@ y_test = Y[splt:]
 
 
 #implementing the best model on test set using the best result
-pca = PCA(n_components=100,  random_state=22)# adjust myself
+pca = PCA(n_components=120,  random_state=0)
 pca.fit(x_train)
 X_t_train = pca.transform(x_train)
 X_t_test = pca.transform(x_test)
 
-#SVM
-clf = SVC(max_iter=10000, C=1000, gamma= 0.0001)
-# clf = SVC(max_iter=10000, C=1, gamma= 0.0001)
-# clf = SVC(max_iter=10000, C=1000, gamma= 0.1)
-# clf = SVC(max_iter=10000, C=1, gamma= 0.01)
+##SVM
+clf = SVC(max_iter=10000, C=100, gamma= 0.01)
 clf.fit(X_t_train, y_train)
 print ('score', clf.score(X_t_test, y_test))
-print ('pred label', clf.predict(X_t_test))
+# print ('pred label', clf.predict(X_t_test))

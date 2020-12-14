@@ -81,7 +81,6 @@ def train(x, y):
     batch_size = 10
     epochs = 100
     num_filters = 100
-    # num_filters = 1
     filter_len = 10
 
     model = Sequential([
@@ -96,7 +95,7 @@ def train(x, y):
 
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-    history = model.fit(x, y, batch_size=batch_size, epochs=epochs, validation_split=0.2, callbacks = [es, mc])
+    history = model.fit(x, y, batch_size=batch_size, epochs=epochs, validation_split=0.1, callbacks = [es, mc])
     plot_history(history)
 
 
@@ -107,8 +106,10 @@ if __name__ == '__main__':
     seed = 1
     X = data['X']
     Y = data['Y']
-    Random(seed).shuffle(X)
-    Random(seed).shuffle(Y)
+    np.random.seed(seed)
+    np.random.shuffle(X)
+    np.random.seed(seed)
+    np.random.shuffle(Y)
     splt = int(len(Y) * 0.9)
     x_train = X[:splt]
     y_train = Y[:splt]
