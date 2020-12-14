@@ -21,7 +21,7 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCh
 
 
 def test_model(x_test, y_test):
-    saved_model = load_model('./models/best_cnn_model_100.h5')
+    saved_model = load_model('./models/best_cnn_model_100_v5.h5')
     test_loss, test_acc = saved_model.evaluate(x_test, y_test, verbose=0)
     print('Test accuracy: {}'.format(test_acc))
 
@@ -76,11 +76,11 @@ def train(x, y):
     dropout_dense = 0.5
 
     es = EarlyStopping(monitor='val_loss', mode='max', verbose = 1, patience=300)
-    mc = ModelCheckpoint('./models/best_cnn_model_100.h5', monitor='val_accuracy', mode='max', verbose = 1, save_best_only=True)
+    mc = ModelCheckpoint('./models/best_cnn_model_100_v5.h5', monitor='val_accuracy', mode='max', verbose = 1, save_best_only=True)
 
     batch_size = 10
-    epochs = 100
-    num_filters = 100
+    epochs = 200
+    num_filters = 200
     filter_len = 10
 
     model = Sequential([
