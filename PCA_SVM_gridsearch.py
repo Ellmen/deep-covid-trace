@@ -79,13 +79,18 @@ y_test = Y[splt:]
 
 
 #implementing the best model on test set using the best result
-pca = PCA(n_components=120,  random_state=0)
-pca.fit(x_train)
-X_t_train = pca.transform(x_train)
-X_t_test = pca.transform(x_test)
+#pca = PCA(n_components=120,  random_state=0)
+#pca.fit(x_train)
+#X_t_train = pca.transform(x_train)
+#X_t_test = pca.transform(x_test)
 
-##SVM
-clf = SVC(max_iter=10000, C=100, gamma= 0.01)
-clf.fit(X_t_train, y_train)
-print ('score', clf.score(X_t_test, y_test))
+###SVM
+#clf = SVC(max_iter=10000, C=100, gamma= 0.01)
+#clf.fit(X_t_train, y_train)
+#print ('score', clf.score(X_t_test, y_test))
 # print ('pred label', clf.predict(X_t_test))
+
+
+clf = SVC(max_iter=10000, C=100, gamma= 0.01)
+clf.fit(x_train, y_train)
+print ('score', clf.score(x_test, y_test))

@@ -90,6 +90,8 @@ X_t_test = pca.transform(x_test)
 
 # Logistic regression
 clf = LogisticRegression(max_iter=10000, C=21.5)
-clf.fit(X_t_train, y_train)
-print ('score', clf.score(X_t_test, y_test))
+# clf.fit(X_t_train, y_train)
+clf.fit(x_train, y_train)
+# print ('score', clf.score(X_t_test, y_test))
+print ('score', clf.score(x_test, y_test))
 # print ('pred label', clf.predict(X_t_test))
